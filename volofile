@@ -11,18 +11,6 @@ module.exports = {
         run: 'v.rm ' + WWW_BUILT
     },
 
-    test: {
-        summary: 'executes all unit tests aka jasmin spec files',
-
-        run: function (d, v, namedArgs) {
-            d.resolve(
-               v.withDir('test', function () {
-                  return v.exec('node consoleRunner.js');
-               })
-            );
-        }
-    },
-
     serve: {
         summary: 'start a local web server for testing',
 
