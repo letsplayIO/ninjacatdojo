@@ -1,0 +1,17 @@
+{
+  "name": "ninjacatdojo",
+  "version": "0.0.1",
+  "license": "GPL v2",
+  "amd": {},
+  "engine": "node ~0.10.15",
+  "volo": {
+    "baseUrl": "www/js/lib",
+    "dependencies": {
+      "require": "github:jrburke/requirejs/2.1.10",
+      "domReady": "github:requirejs/domReady/2.0.1"
+    }
+  },
+  "devDependencies": {
+    "node-static": "~0.7.3"
+  }
+}
