@@ -42,12 +42,12 @@ define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wav
 
         this._nextScene();
 
-        this._nextWave();
-
         this.gameLoop.run();
     };
 
     App.prototype.tick = function () {
+        console.log("tick tack");
+
         this.game.overAllTimeLeft--;
         this.game.timeLeftOnScene--;
         this.game.timeLeftWithWave--;
@@ -62,7 +62,7 @@ define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wav
             setTimeout(function () {
                 self._nextScene();
                 self.renderer.pause = false;
-            }, 1000);
+            }, 500);
 
         } else if (this.game.timeLeftWithWave <= 0) {
             this._removeCurrentTargets();
@@ -71,11 +71,13 @@ define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wav
             setTimeout(function () {
                 self._nextWave();
                 self.renderer.pause = false;
-            }, 1000);
+            }, 500);
         }
     };
 
     App.prototype._end = function () {
+        console.log("end");
+        
         this._removeCurrentTargets();
         this.renderer.showEndScreen();
         this.renderer.pause = true;
@@ -89,6 +91,8 @@ define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wav
     };
 
     App.prototype._nextScene = function () {
+        console.log("new scene");
+        
         if (this.level.scenes.length <= 0) {
             this._end();
             return;
@@ -101,6 +105,8 @@ define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wav
     };
 
     App.prototype._nextWave = function () {
+        console.log("new wave");
+        
         if (this.game.currentScene.waves.length <= 0) {
             this._nextScene();
             return;
