@@ -1,4 +1,4 @@
-require(['require', 'lib/domReady', 'App', 'GameLoop', 'Renderer', 'OrientationHandler'], function (require) {
+require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input/OrientationHandler'], function (require) {
     var requestAnimationFrame = (function () {
         return  (window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
@@ -12,21 +12,35 @@ require(['require', 'lib/domReady', 'App', 'GameLoop', 'Renderer', 'OrientationH
 
     var screen = document.getElementById('screen');
     var ctx = screen.getContext('2d');
+    var INNER_WIDTH = window.innerWidth;
+    var INNER_HEIGHT = window.innerHeight;
 
     var App = require('App'),
         GameLoop = require('GameLoop'),
-        Renderer = require('Renderer'),
-        OrientationHandler = require('OrientationHandler');
+        Renderer = require('render/Renderer'),
+        OrientationHandler = require('input/OrientationHandler');
 
     var renderer = new Renderer(screen, ctx);
-    var gameLoop = new GameLoop(requestAnimationFrame, renderer);
-    var app = new App(renderer, gameLoop);
+    var tickBus = [];
+    var gameLoop = new GameLoop(requestAnimationFrame, renderer, tickBus);
+    var resizeBus = [];
+    var app = new App(renderer, gameLoop, resizeBus, INNER_WIDTH, INNER_HEIGHT);
+    tickBus.push(app.tick.bind(app));
 
-    screen.addEventListener('click', app.startGame.bind(app));
-    screen.removeEventListener('click', app.startGame);
+    resizeBus.push(renderer.resize.bind(renderer));
+    resizeBus.push(app.resize.bind(app));
+    
+    var listener = function () {
+        window.removeEventListener('click', listener); 
+        console.log("listener has been called");
+        screen.webkitRequestFullScreen();
+        app.startGame();
+    };
+    window.addEventListener('click', listener);
 
-    var orientationHandler = new OrientationHandler(app, 480, 320);
+    var orientationHandler = new OrientationHandler(app, INNER_WIDTH, INNER_HEIGHT);
+    resizeBus.push(orientationHandler.resize.bind(orientationHandler));
     window.addEventListener('deviceorientation', orientationHandler.handle.bind(orientationHandler));
 
-    app.run()
+    app.run();
 });
