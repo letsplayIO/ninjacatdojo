@@ -1,10 +1,11 @@
 define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wave) {
-    function App(renderer, gameLoop, resizeBus, innerWidth, innerHeight) {
+    function App(renderer, gameLoop, resizeBus, isHit, innerWidth, innerHeight) {
         this.renderer = renderer;
         this.gameLoop = gameLoop;
         this.players = {};
         this.state = State.READY;
         this.resizeBus = resizeBus;
+        this.isHit = isHit;
 
         this.innerWidth = innerWidth;
         this.innerHeight = innerHeight;
@@ -28,7 +29,7 @@ define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wav
             });
         }, 1000);
 
-        var playerOne = {name: "one", x: 240, y: 160, radius: 2, color: 'black', score: 0, multi: 0};
+        var playerOne = {name: "one", x: 240, y: 160, radius: 2, color: 'black', score: 0, multi: 1};
         this.players['one'] = playerOne;
         this.renderer.addPlayer(playerOne);
 
@@ -49,6 +50,9 @@ define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wav
         console.log("tick tack");
 
         this.game.overAllTimeLeft--;
+
+        this.renderer.updateTime(this.game.overAllTimeLeft);
+
         this.game.timeLeftOnScene--;
         this.game.timeLeftWithWave--;
         var self = this;
@@ -114,6 +118,7 @@ define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wav
 
         this.game.currentWave = this.game.currentScene.waves.shift();
         this.game.timeLeftWithWave = this.game.currentWave.maxTime;
+        this.game.targetsLeft = this.game.currentWave.targets.length;
 
         var id = 0;
         this.game.targetDict = {};
@@ -194,6 +199,35 @@ define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wav
         var player = this.players[id];
         player.x = x;
         player.y = y;
+    };
+
+    App.prototype.fire = function () {
+        var player = this.players['one'];
+
+        var isHit = false;
+        for (var key in this.game.targetDict) {
+            var target = this.game.targetDict[key];
+
+            if (this.isHit(player.x, player.y, target.x, target.y, target.radius + 2)) {
+                isHit = true;
+
+                player.score += 10 * player.multi;
+                player.multi++;
+
+                this.renderer.removeTarget(key);
+                delete this.game.targetDict[key];
+
+                this.game.targetsLeft--;
+                if (this.game.targetsLeft <= 0) {
+                    this._nextWave();
+                }
+            }
+        }
+
+        if (!isHit) {
+            player.multi = 1;
+        }
+
     };
 
     var State = {

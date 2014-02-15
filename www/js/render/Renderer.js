@@ -7,6 +7,7 @@ define(function () {
         this.players = [];
         this.targets = {};
         this.pause = false;
+        this.time = "0";
     }
 
     Renderer.prototype.resize = function (width, height) {
@@ -66,10 +67,33 @@ define(function () {
             this._renderTarget(this.targets[key]);
         }
         this.players.forEach(this._renderPlayer.bind(this));
+        this._renderHUD();
     };
 
     Renderer.prototype._renderPlayer = function (elem) {
         this._renderCircle(elem.x, elem.y, elem.radius, elem.color);
+    };
+
+    Renderer.prototype._renderHUD = function () {
+        this._renderScore();
+        this._renderTime();
+    };
+
+    Renderer.prototype._renderScore = function () {
+        this.screenCtx.font = 'italic 10pt Calibri';
+        this.screenCtx.textAlign = 'center';
+        this.screenCtx.baseline = 'middle';
+        this.screenCtx.fillStyle = 'black';
+        this.screenCtx.fillText('score: ' + this.players[0].score, this.screenWidth / 2, this.screenHeight / 8);
+        this.screenCtx.fillText('multi: ' + this.players[0].multi, this.screenWidth / 8, this.screenHeight / 8);
+    };
+
+    Renderer.prototype._renderTime = function () {
+        this.screenCtx.font = 'bold 10pt Calibri';
+        this.screenCtx.textAlign = 'center';
+        this.screenCtx.baseline = 'middle';
+        this.screenCtx.fillStyle = 'black';
+        this.screenCtx.fillText(this.time, this.screenWidth / 8 * 7, this.screenHeight / 8);
     };
 
     Renderer.prototype._renderTarget = function (elem) {
@@ -93,6 +117,10 @@ define(function () {
 
     Renderer.prototype.removeTarget = function (id) {
         delete this.targets[id];
+    };
+
+    Renderer.prototype.updateTime = function (newTime) {
+        this.time = newTime.toString();
     };
 
     return Renderer;

@@ -1,4 +1,5 @@
-require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input/OrientationHandler'], function (require) {
+require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input/OrientationHandler', 'HitDetector'
+], function (require) {
     var requestAnimationFrame = (function () {
         return  (window.requestAnimationFrame ||
             window.webkitRequestAnimationFrame ||
@@ -18,13 +19,15 @@ require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input
     var App = require('App'),
         GameLoop = require('GameLoop'),
         Renderer = require('render/Renderer'),
-        OrientationHandler = require('input/OrientationHandler');
+        OrientationHandler = require('input/OrientationHandler'),
+        HitDetector = require('HitDetector');
 
     var renderer = new Renderer(screen, ctx);
     var tickBus = [];
     var gameLoop = new GameLoop(requestAnimationFrame, renderer, tickBus);
     var resizeBus = [];
-    var app = new App(renderer, gameLoop, resizeBus, INNER_WIDTH, INNER_HEIGHT);
+    var hitDetector = new HitDetector(ctx);
+    var app = new App(renderer, gameLoop, resizeBus, hitDetector.isHit.bind(hitDetector), INNER_WIDTH, INNER_HEIGHT);
     tickBus.push(app.tick.bind(app));
 
     resizeBus.push(renderer.resize.bind(renderer));
@@ -35,6 +38,8 @@ require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input
         console.log("listener has been called");
         screen.webkitRequestFullScreen();
         app.startGame();
+
+        screen.addEventListener('click', app.fire.bind(app));
     };
     window.addEventListener('click', listener);
 
