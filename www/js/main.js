@@ -1,4 +1,5 @@
-require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input/OrientationHandler', 'HitDetector'
+require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input/OrientationHandler', 'HitDetector',
+    'input/FullScreenController', 'BrowserOracle'
 ], function (require) {
     var requestAnimationFrame = (function () {
         return  (window.requestAnimationFrame ||
@@ -20,7 +21,9 @@ require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input
         GameLoop = require('GameLoop'),
         Renderer = require('render/Renderer'),
         OrientationHandler = require('input/OrientationHandler'),
-        HitDetector = require('HitDetector');
+        HitDetector = require('HitDetector'),
+        FullScreenController = require('input/FullScreenController'),
+        BrowserOracle = require('BrowserOracle');
 
     var renderer = new Renderer(screen, ctx);
     var tickBus = [];
@@ -32,18 +35,20 @@ require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input
 
     resizeBus.push(renderer.resize.bind(renderer));
     resizeBus.push(app.resize.bind(app));
-    
+
+    var fsCtrl = new FullScreenController(screen);
     var listener = function () {
         window.removeEventListener('click', listener); 
         console.log("listener has been called");
-        screen.webkitRequestFullScreen();
+//        fsCtrl.request();
+//        document.documentElement.mozRequestFullScreen();
         app.startGame();
 
         screen.addEventListener('click', app.fire.bind(app));
     };
     window.addEventListener('click', listener);
 
-    var orientationHandler = new OrientationHandler(app, INNER_WIDTH, INNER_HEIGHT);
+    var orientationHandler = new OrientationHandler(app, INNER_WIDTH, INNER_HEIGHT, new BrowserOracle(navigator.userAgent).isFirefox);
     resizeBus.push(orientationHandler.resize.bind(orientationHandler));
     window.addEventListener('deviceorientation', orientationHandler.handle.bind(orientationHandler));
 

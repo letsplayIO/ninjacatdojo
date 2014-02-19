@@ -1,8 +1,9 @@
 define(function () {
-    function OrientationHandler(app, maxWidth, maxHeight) {
+    function OrientationHandler(app, maxWidth, maxHeight, isFirefox) {
         this.app = app;
         this.maxX = maxWidth;
         this.maxY = maxHeight;
+        this.isFirefox = isFirefox;
     }
 
     var MAX_RANGE = 12;
@@ -16,6 +17,11 @@ define(function () {
         } else if (event.beta < -MAX_RANGE) {
             x = -MAX_RANGE;
         }
+
+        if (this.isFirefox) {
+            x *= -1;
+        }
+
         x = Math.floor(this.maxX * (x + MAX_RANGE) / (MAX_RANGE * 2));
 
         var y = -(event.gamma + GAMMA_SHIFT);
@@ -24,6 +30,11 @@ define(function () {
         } else if (event.gamma + GAMMA_SHIFT < -MAX_RANGE) {
             y = MAX_RANGE;
         }
+
+        if (this.isFirefox) {
+            y *= -1;
+        }
+
         y = Math.floor(this.maxY * (y + MAX_RANGE) / (MAX_RANGE * 2));
 
         this.app.updatePlayer('one', x, y);

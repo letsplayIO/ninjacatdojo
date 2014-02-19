@@ -1,0 +1,16 @@
+{
+  "version": "0.1",
+  "name": "Ninja Cat Dojo",
+  "description": "a cute ninja dagger shooter",
+  "launch_path": "/index.html",
+  "icons": {
+    "16": "/icon/icon-16.png",
+    "48": "/icon/icon-48.png",
+    "128": "/icon/icon-128.png"
+  },
+  "developer": {
+    "name": "letsplay.io - Raphael Stary",
+    "url": "http://letsplay.io"
+  },
+  "default_locale": "en"
+}
