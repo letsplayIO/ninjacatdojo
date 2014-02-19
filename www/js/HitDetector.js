@@ -6,7 +6,7 @@ define(function () {
     HitDetector.prototype.isHit = function (pointerX, pointerY, targetX, targetY, targetRadius) {
         this.ctx.beginPath();
         this.ctx.arc(targetX, targetY, targetRadius, 0, 2 * Math.PI, false);
-
+        this.ctx.closePath();
         return this.ctx.isPointInPath(pointerX, pointerY);
     };
 

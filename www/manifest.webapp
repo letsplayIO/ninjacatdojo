@@ -12,5 +12,8 @@
     "name": "letsplay.io - Raphael Stary",
     "url": "http://letsplay.io"
   },
-  "default_locale": "en"
+  "default_locale": "en",
+  "fullscreen": "true",
+  "installs_allowed_from": ["*"],
+  "orientation": ["landscape-primary"]
 }

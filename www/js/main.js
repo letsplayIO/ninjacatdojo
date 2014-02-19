@@ -38,17 +38,17 @@ require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input
 
     var fsCtrl = new FullScreenController(screen);
     var listener = function () {
-        window.removeEventListener('click', listener); 
-        console.log("listener has been called");
+        screen.removeEventListener('click', listener);
 //        fsCtrl.request();
 //        document.documentElement.mozRequestFullScreen();
         app.startGame();
 
         screen.addEventListener('click', app.fire.bind(app));
     };
-    window.addEventListener('click', listener);
-
-    var orientationHandler = new OrientationHandler(app, INNER_WIDTH, INNER_HEIGHT, new BrowserOracle(navigator.userAgent).isFirefox);
+    screen.addEventListener('click', listener);
+    var oracle = new BrowserOracle(navigator.userAgent);
+    oracle.init();
+    var orientationHandler = new OrientationHandler(app, INNER_WIDTH, INNER_HEIGHT, oracle.isFirefox);
     resizeBus.push(orientationHandler.resize.bind(orientationHandler));
     window.addEventListener('deviceorientation', orientationHandler.handle.bind(orientationHandler));
 

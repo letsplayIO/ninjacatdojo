@@ -4,7 +4,7 @@ define(function () {
     }
 
     BrowserOracle.prototype.init = function () {
-        this.isFirefox = this.userAgent.match(/firefox/i);
+        this.isFirefox = /firefox/i.test(this.userAgent);
     };
 
     return BrowserOracle;
