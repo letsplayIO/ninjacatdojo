@@ -43,7 +43,8 @@ require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input
 //        document.documentElement.mozRequestFullScreen();
         app.startGame();
 
-        screen.addEventListener('click', app.fire.bind(app));
+        screen.addEventListener('touchend', app.fire.bind(app));
+//        screen.addEventListener('touchend', app.fire.bind(app));
     };
     screen.addEventListener('click', listener);
     var oracle = new BrowserOracle(navigator.userAgent);
