@@ -1,5 +1,5 @@
 define(function () {
-    function Renderer(screen, screenCtx) {
+    function Renderer(screen, screenCtx, fireArea) {
         this.screen = screen;
         this.screenCtx = screenCtx;
         this.screenWidth = screen.width;
@@ -8,13 +8,33 @@ define(function () {
         this.targets = {};
         this.pause = false;
         this.time = "0";
+        this.fireArea = fireArea;
     }
+
+    var START_RADIUS = 15,
+        DPAD_RADIUS = 100,
+        END_RADIUS = 25;
 
     Renderer.prototype.resize = function (width, height) {
         this.screen.width = width;
         this.screen.height = height;
         this.screenWidth = width;
         this.screenHeight = height;
+    };
+
+    var showDPad = false,
+        startPoint,
+        endPoint;
+
+    Renderer.prototype.showDPad = function (start, end) {
+        startPoint = start;
+        endPoint = end;
+
+        showDPad = true;
+    };
+
+    Renderer.prototype.hideDPad = function () {
+        showDPad = false;
     };
 
     Renderer.prototype.showStartScreen = function () {
@@ -68,6 +88,14 @@ define(function () {
         }
         this.players.forEach(this._renderPlayer.bind(this));
         this._renderHUD();
+        this._renderDPad();
+        this._renderFireButton();
+
+    };
+
+    Renderer.prototype._renderFireButton = function () {
+        this.screenCtx.strokeRect(this.fireArea.startX, this.fireArea.startY,
+            this.fireArea.endX - this.fireArea.startX, this.fireArea.endY - this.fireArea.startY);
     };
 
     Renderer.prototype._renderPlayer = function (elem) {
@@ -77,6 +105,36 @@ define(function () {
     Renderer.prototype._renderHUD = function () {
         this._renderScore();
         this._renderTime();
+    };
+
+    Renderer.prototype._renderDPad = function () {
+        if (!showDPad) {
+            return;
+        }
+
+        this.screenCtx.save();
+        this.screenCtx.beginPath();
+        this.screenCtx.arc(startPoint.x, startPoint.y, START_RADIUS, 0, 2 * Math.PI, false);
+        this.screenCtx.fillStyle = 'lightblue';
+        this.screenCtx.fill();
+        this.screenCtx.restore();
+
+        this.screenCtx.save();
+        this.screenCtx.beginPath();
+        this.screenCtx.arc(endPoint.x, endPoint.y, END_RADIUS, 0, 2 * Math.PI, false);
+        this.screenCtx.strokeStyle = 'lightblue';
+        this.screenCtx.lineWidth = 5;
+        this.screenCtx.stroke();
+        this.screenCtx.restore();
+
+        this.screenCtx.save();
+        this.screenCtx.beginPath();
+        this.screenCtx.arc(startPoint.x, startPoint.y, DPAD_RADIUS, 0, 2 * Math.PI, false);
+        this.screenCtx.strokeStyle = 'lightgreen';
+        this.screenCtx.lineWidth = 5;
+        this.screenCtx.stroke();
+        this.screenCtx.restore();
+
     };
 
     Renderer.prototype._renderScore = function () {

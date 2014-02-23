@@ -192,13 +192,38 @@ define(['level/Level', 'level/Scene', 'level/Wave'], function (Level, Scene, Wav
         return new Level(45, [sceneOne, sceneTwo]);
     };
 
+    App.prototype.updateAxes = function (xAxis, yAxis) {
+        if (this.state != State.RUNNING)
+            return;
+
+        var player = this.players['one'];
+        
+        var x = player.x + Math.floor(xAxis * 10);
+        var y = player.y + Math.floor(yAxis * 10);
+        if (x < 0) {
+            x = 0;
+        }
+        if (y < 0) {
+            y = 0;
+        }
+        if (x > screen.width) {
+            x = screen.width;
+        }
+        if (y > screen.height) {
+            y = screen.height;
+        }
+        
+        player.x = x;
+        player.y = y;
+    };
+
     App.prototype.updatePlayer = function (id, x, y) {
         if (this.state != State.RUNNING)
             return;
 
         var player = this.players[id];
-        player.x = x;
-        player.y = y;
+        player.x += x;
+        player.y += y;
     };
 
     App.prototype.fire = function () {

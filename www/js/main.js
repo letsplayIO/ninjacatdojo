@@ -1,5 +1,5 @@
 require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input/OrientationHandler', 'HitDetector',
-    'input/FullScreenController', 'BrowserOracle'
+    'input/FullScreenController', 'BrowserOracle', 'input/TiltController', 'input/TouchDPad'
 ], function (require) {
     var requestAnimationFrame = (function () {
         return  (window.requestAnimationFrame ||
@@ -20,12 +20,21 @@ require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input
     var App = require('App'),
         GameLoop = require('GameLoop'),
         Renderer = require('render/Renderer'),
-        OrientationHandler = require('input/OrientationHandler'),
+//        OrientationHandler = require('input/OrientationHandler'),
         HitDetector = require('HitDetector'),
         FullScreenController = require('input/FullScreenController'),
-        BrowserOracle = require('BrowserOracle');
+        BrowserOracle = require('BrowserOracle'),
+        TiltController = require('input/TiltController'),
+        TouchDPad = require('input/TouchDPad');
 
-    var renderer = new Renderer(screen, ctx);
+    var fireArea = {
+        startX: screen.width / 8 * 6,
+        startY: screen.height / 8 * 6,
+        endX: screen.width,
+        endY: screen.height
+    };
+
+    var renderer = new Renderer(screen, ctx, fireArea);
     var tickBus = [];
     var gameLoop = new GameLoop(requestAnimationFrame, renderer, tickBus);
     var resizeBus = [];
@@ -36,6 +45,9 @@ require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input
     resizeBus.push(renderer.resize.bind(renderer));
     resizeBus.push(app.resize.bind(app));
 
+
+    var dPad = new TouchDPad(app, renderer, fireArea);
+
     var fsCtrl = new FullScreenController(screen);
     var listener = function () {
         screen.removeEventListener('click', listener);
@@ -43,15 +55,22 @@ require(['require', 'lib/domReady', 'App', 'GameLoop', 'render/Renderer', 'input
 //        document.documentElement.mozRequestFullScreen();
         app.startGame();
 
-        screen.addEventListener('touchend', app.fire.bind(app));
 //        screen.addEventListener('touchend', app.fire.bind(app));
+
+        screen.addEventListener('touchstart', dPad.touchStart.bind(dPad));
+        screen.addEventListener('touchmove', dPad.touchMove.bind(dPad));
+        screen.addEventListener('touchend', dPad.touchEnd.bind(dPad));
+
     };
     screen.addEventListener('click', listener);
     var oracle = new BrowserOracle(navigator.userAgent);
     oracle.init();
-    var orientationHandler = new OrientationHandler(app, INNER_WIDTH, INNER_HEIGHT, oracle.isFirefox);
-    resizeBus.push(orientationHandler.resize.bind(orientationHandler));
-    window.addEventListener('deviceorientation', orientationHandler.handle.bind(orientationHandler));
+//    var orientationHandler = new OrientationHandler(app, INNER_WIDTH, INNER_HEIGHT, oracle.isFirefox);
+//    resizeBus.push(orientationHandler.resize.bind(orientationHandler));
+
+//    window.addEventListener('deviceorientation', orientationHandler.handle.bind(orientationHandler));
+//    var tiltPad = new TiltController(app, oracle.isFirefox);
+//    window.addEventListener('deviceorientation', tiltPad.handleOrientation.bind(tiltPad));
 
     app.run();
 });
